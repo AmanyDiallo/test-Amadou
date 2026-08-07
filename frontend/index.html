@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Frontend minimal</title>
+  </head>
+  <body>
+    <h1>Frontend minimal</h1>
+    <div id="status">Chargement…</div>
+    <script>
+      // Replace API_URL with your deployed API Gateway URL (see infra outputs)
+      const API_URL = "<API_URL_PLACEHOLDER>";
+
+      async function ping() {
+        try {
+          const resp = await fetch(API_URL || '/');
+          const data = await resp.json();
+          document.getElementById('status').textContent = JSON.stringify(data);
+        } catch (e) {
+          document.getElementById('status').textContent = 'Erreur: ' + e.message;
+        }
+      }
+
+      ping();
+    </script>
+  </body>
+</html>
