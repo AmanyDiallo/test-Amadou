@@ -1,0 +1,4 @@
+.venv/
+.aws-sam/
+AWSCLIV2.pkg
+frontend/index.html.bak

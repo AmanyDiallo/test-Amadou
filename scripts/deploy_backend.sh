@@ -5,12 +5,19 @@ set -euo pipefail
 # Usage: ./scripts/deploy_backend.sh
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+SAM_BIN="$ROOT_DIR/.venv/bin/sam"
 cd "$ROOT_DIR"
 
+if [ ! -x "$SAM_BIN" ]; then
+  echo "Erreur : sam CLI introuvable dans $SAM_BIN" >&2
+  echo "Assure-toi d'avoir installé aws-sam-cli dans .venv et de l'activer." >&2
+  exit 1
+fi
+
 echo "Building SAM application..."
-sam build --template-file infra/template.yaml
+"$SAM_BIN" build --template-file infra/template.yaml
 
 echo "Launching sam deploy --guided (interactive)..."
-sam deploy --guided --template-file infra/template.yaml --stack-name test-amadou-stack
+"$SAM_BIN" deploy --guided --template-file infra/template.yaml --stack-name test-amadou-stack
 
 echo "Déploiement terminé. Récupérez ApiUrl depuis la sortie ou CloudFormation Outputs."
