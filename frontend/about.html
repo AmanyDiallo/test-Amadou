@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FootQuiz - À propos</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="index.html">FootQuiz</a>
+        <nav class="main-nav">
+          <a href="index.html">Accueil</a>
+          <a href="quiz.html">Quiz</a>
+          <a class="active" href="about.html">À propos</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero about-hero">
+        <div class="container hero-grid">
+          <div>
+            <p class="eyebrow">À propos du jeu</p>
+            <h1>Un site statique avec un backend dynamique.</h1>
+            <p class="hero-text">FootQuiz utilise un frontend HTML/CSS/JS léger hébergé sur Amplify, et un backend Python FastAPI sur AWS Lambda pour générer des questions de quiz.</p>
+          </div>
+          <div class="hero-card">
+            <div class="hero-card-content">
+              <h2>Comment ça marche ?</h2>
+              <ul class="hero-list">
+                <li>Front-end statique servi par Amplify</li>
+                <li>Backend via API Gateway + Lambda</li>
+                <li>Questions randomisées à chaque partie</li>
+                <li>Questionnaires de foot sur les grands championnats</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="features">
+        <div class="container section-heading">
+          <h2>Les points forts du quiz</h2>
+          <p>Un jeu simple à utiliser, avec des questions qui changent, un score instantané, et une interface moderne.</p>
+        </div>
+        <div class="container feature-grid">
+          <article class="feature-card">
+            <h3>Rapide</h3>
+            <p>Une page légère, sans framework lourd, prête à être déployée rapidement.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Responsive</h3>
+            <p>Design optimisé pour mobile et desktop, avec une navigation simple.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Évolutif</h3>
+            <p>Tu peux ajouter des catégories, des scores, des questions en quelques minutes.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>FootQuiz — Simple, rapide et dynamique.</p>
+        <p>Développé pour faire un quiz football attractif.</p>
+      </div>
+    </footer>
+  </body>
+</html>

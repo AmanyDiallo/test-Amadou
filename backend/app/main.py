@@ -1,4 +1,6 @@
-from fastapi import FastAPI, HTTPException
+import random
+
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
@@ -132,16 +134,20 @@ def read_root():
 
 
 @app.get("/quiz/questions", response_model=QuizQuestionsResponse)
-def get_quiz_questions():
-    return {"questions": [
-        {
+def get_quiz_questions(count: int = Query(4, ge=1, le=len(QUESTIONS))):
+    sampled = random.sample(QUESTIONS, min(count, len(QUESTIONS)))
+    questions = []
+    for q in sampled:
+        options = q["options"].copy()
+        random.shuffle(options)
+        questions.append({
             "id": q["id"],
             "category": q["category"],
             "text": q["text"],
-            "options": q["options"],
-        }
-        for q in QUESTIONS
-    ]}
+            "options": options,
+        })
+    random.shuffle(questions)
+    return {"questions": questions}
 
 
 @app.post("/quiz/answer", response_model=QuizAnswerResponse)

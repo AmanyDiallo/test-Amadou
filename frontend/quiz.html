@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FootQuiz - Quiz</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="index.html">FootQuiz</a>
+        <nav class="main-nav">
+          <a href="index.html">Accueil</a>
+          <a class="active" href="quiz.html">Quiz</a>
+          <a href="about.html">À propos</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero quiz-hero">
+        <div class="container hero-grid">
+          <div>
+            <p class="eyebrow">Quiz interactif</p>
+            <h1>Teste ton savoir sur le football européen.</h1>
+            <p class="hero-text">Chaque partie charge des questions différentes et mélange les réponses. Rends-toi maître du jeu.</p>
+          </div>
+          <div class="hero-card quiz-card">
+            <div class="hero-card-content">
+              <p class="quiz-meta">Question <span id="current-number">0</span> / <span id="total-number">0</span></p>
+              <h2 id="question-title">Chargement du quiz...</h2>
+              <div class="choices" id="choices"></div>
+              <div class="status" id="status"></div>
+              <div class="quiz-footer">
+                <button class="btn btn-secondary hidden" id="nextBtn">Question suivante</button>
+                <button class="btn btn-secondary hidden" id="restartBtn">Recommencer</button>
+              </div>
+              <p class="quiz-detail">Score : <strong id="score">0</strong></p>
+              <p class="quiz-detail small">API : <a href="https://2git8cdij7.execute-api.eu-west-3.amazonaws.com/prod" target="_blank" rel="noreferrer">FootQuiz API</a></p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <p>FootQuiz — Ton quiz football dynamique.</p>
+        <p>Questions aléatoires à chaque partie.</p>
+      </div>
+    </footer>
+
+    <script src="quiz.js"></script>
+  </body>
+</html>
