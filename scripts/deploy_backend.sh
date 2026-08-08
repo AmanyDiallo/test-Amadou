@@ -17,7 +17,13 @@ fi
 echo "Building SAM application..."
 "$SAM_BIN" build --template-file infra/template.yaml
 
+BUILD_TEMPLATE="$ROOT_DIR/.aws-sam/build/template.yaml"
+if [ ! -f "$BUILD_TEMPLATE" ]; then
+  echo "Erreur : template build introuvable dans $BUILD_TEMPLATE" >&2
+  exit 1
+fi
+
 echo "Launching sam deploy --guided (interactive)..."
-"$SAM_BIN" deploy --guided --template-file infra/template.yaml --stack-name test-amadou-stack
+"$SAM_BIN" deploy --guided --template-file "$BUILD_TEMPLATE" --stack-name test-amadou-stack
 
 echo "Déploiement terminé. Récupérez ApiUrl depuis la sortie ou CloudFormation Outputs."

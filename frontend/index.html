@@ -2,27 +2,282 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Frontend minimal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Foot</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0d1b2a, #1b263b);
+        color: #e0e1dd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .card {
+        width: min(800px, 100%);
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 18px;
+        padding: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      }
+      h1 {
+        margin-top: 0;
+        font-size: clamp(2rem, 3vw, 3rem);
+      }
+      .meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .meta span {
+        background: rgba(255,255,255,0.08);
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 0.95rem;
+      }
+      .question {
+        margin: 24px 0 8px;
+        font-size: 1.25rem;
+        line-height: 1.5;
+      }
+      .choices {
+        display: grid;
+        gap: 12px;
+      }
+      .choice {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.16);
+        padding: 18px 22px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: transform 0.15s ease, background 0.15s ease;
+      }
+      .choice:hover {
+        background: rgba(255,255,255,0.16);
+        transform: translateY(-1px);
+      }
+      .choice.correct {
+        border-color: #45b26b;
+        background: rgba(69, 178, 107, 0.18);
+      }
+      .choice.wrong {
+        border-color: #d64545;
+        background: rgba(214, 69, 69, 0.16);
+      }
+      .status {
+        margin-top: 20px;
+        min-height: 48px;
+      }
+      .status.success {
+        color: #b8ffd8;
+      }
+      .status.error {
+        color: #ffb3b3;
+      }
+      .footer {
+        margin-top: 26px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+      }
+      button {
+        border: none;
+        border-radius: 999px;
+        padding: 12px 22px;
+        font-size: 1rem;
+        cursor: pointer;
+        background: #e0e1dd;
+        color: #0d1b2a;
+        transition: transform 0.15s ease, filter 0.15s ease;
+      }
+      button:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.05);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+        transform: none;
+      }
+      .small {
+        font-size: 0.94rem;
+        opacity: 0.85;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
   </head>
   <body>
-    <h1>Frontend minimal</h1>
-    <div id="status">Chargement…</div>
-    <script>
-      // Replace API_URL with your deployed API Gateway URL (see infra outputs)
-      const API_URL = "https://2git8cdij7.execute-api.eu-west-3.amazonaws.com/prod/";
+    <div class="card">
+      <h1>Quiz foot</h1>
+      <div class="meta">
+        <span id="category">Championnat et C1</span>
+        <span id="progress">0 / 0</span>
+        <span id="score">Score : 0</span>
+      </div>
 
-      async function ping() {
+      <p class="question" id="question">Chargement des questions…</p>
+      <div class="choices" id="choices"></div>
+      <div class="status" id="status"></div>
+      <div class="footer">
+        <button id="nextBtn" class="hidden">Question suivante</button>
+        <button id="restartBtn" class="hidden">Recommencer</button>
+      </div>
+      <p class="small">API : <span id="apiUrl"></span></p>
+    </div>
+
+    <script>
+      const API_URL = "https://2git8cdij7.execute-api.eu-west-3.amazonaws.com/prod";
+      const state = {
+        questions: [],
+        currentIndex: 0,
+        score: 0,
+        answered: false,
+      };
+
+      const questionEl = document.getElementById('question');
+      const choicesEl = document.getElementById('choices');
+      const statusEl = document.getElementById('status');
+      const progressEl = document.getElementById('progress');
+      const scoreEl = document.getElementById('score');
+      const categoryEl = document.getElementById('category');
+      const nextBtn = document.getElementById('nextBtn');
+      const restartBtn = document.getElementById('restartBtn');
+      const apiUrlEl = document.getElementById('apiUrl');
+
+      apiUrlEl.textContent = API_URL;
+
+      async function fetchQuiz() {
         try {
-          const resp = await fetch(API_URL || '/');
-          const data = await resp.json();
-          document.getElementById('status').textContent = JSON.stringify(data);
-        } catch (e) {
-          document.getElementById('status').textContent = 'Erreur: ' + e.message;
+          const response = await fetch(`${API_URL}/quiz/questions`);
+          const data = await response.json();
+          state.questions = data.questions;
+          state.currentIndex = 0;
+          state.score = 0;
+          state.answered = false;
+          renderQuestion();
+        } catch (error) {
+          questionEl.textContent = 'Impossible de charger le quiz.';
+          statusEl.textContent = error.message;
+          statusEl.className = 'status error';
         }
       }
 
-      ping();
+      function renderQuestion() {
+        const question = state.questions[state.currentIndex];
+        if (!question) {
+          showFinalScreen();
+          return;
+        }
+
+        categoryEl.textContent = question.category;
+        progressEl.textContent = `${state.currentIndex + 1} / ${state.questions.length}`;
+        scoreEl.textContent = `Score : ${state.score}`;
+        statusEl.textContent = '';
+        statusEl.className = 'status';
+        nextBtn.classList.add('hidden');
+        restartBtn.classList.add('hidden');
+        state.answered = false;
+
+        questionEl.textContent = question.text;
+        choicesEl.innerHTML = '';
+
+        question.options.forEach((option) => {
+          const button = document.createElement('button');
+          button.className = 'choice';
+          button.textContent = option.text;
+          button.addEventListener('click', () => selectAnswer(question.id, option.id, button));
+          choicesEl.appendChild(button);
+        });
+      }
+
+      async function selectAnswer(questionId, answerId, button) {
+        if (state.answered) return;
+        state.answered = true;
+
+        try {
+          const response = await fetch(`${API_URL}/quiz/answer`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ question_id: questionId, answer_id: answerId }),
+          });
+
+          const result = await response.json();
+          const buttons = Array.from(document.querySelectorAll('.choice'));
+          buttons.forEach((btn, index) => {
+            btn.disabled = true;
+            const optionId = state.questions[state.currentIndex].options[index].id;
+            if (optionId === result.correct_answer_id) {
+              btn.classList.add('correct');
+            }
+            if (optionId === answerId && !result.correct) {
+              btn.classList.add('wrong');
+            }
+          });
+
+          if (result.correct) {
+            state.score += 1;
+            statusEl.textContent = 'Bonne réponse ! ' + result.explanation;
+            statusEl.className = 'status success';
+          } else {
+            statusEl.textContent = `Mauvaise réponse. La bonne réponse était : ${result.correct_answer_text}. ${result.explanation}`;
+            statusEl.className = 'status error';
+          }
+
+          scoreEl.textContent = `Score : ${state.score}`;
+          nextBtn.classList.remove('hidden');
+          if (state.currentIndex === state.questions.length - 1) {
+            nextBtn.textContent = 'Voir le score final';
+          } else {
+            nextBtn.textContent = 'Question suivante';
+          }
+        } catch (error) {
+          statusEl.textContent = 'Erreur lors de la validation : ' + error.message;
+          statusEl.className = 'status error';
+          state.answered = false;
+        }
+      }
+
+      function showFinalScreen() {
+        questionEl.textContent = 'Quiz terminé !';
+        choicesEl.innerHTML = '';
+        statusEl.textContent = `Ton score final est ${state.score} sur ${state.questions.length}.`;
+        statusEl.className = 'status success';
+        progressEl.textContent = `${state.questions.length} / ${state.questions.length}`;
+        nextBtn.classList.add('hidden');
+        restartBtn.classList.remove('hidden');
+      }
+
+      function goToNextQuestion() {
+        state.currentIndex += 1;
+        if (state.currentIndex >= state.questions.length) {
+          showFinalScreen();
+        } else {
+          renderQuestion();
+        }
+      }
+
+      function restartQuiz() {
+        state.currentIndex = 0;
+        state.score = 0;
+        renderQuestion();
+      }
+
+      nextBtn.addEventListener('click', goToNextQuestion);
+      restartBtn.addEventListener('click', restartQuiz);
+
+      fetchQuiz();
     </script>
   </body>
 </html>
