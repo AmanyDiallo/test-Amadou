@@ -27,7 +27,13 @@ Resources:
       CodeUri: ../backend/
       Handler: app.handler.handler
       Events:
-        ApiEvent:
+        ApiRootEvent:
+          Type: Api
+          Properties:
+            Path: /
+            Method: ANY
+            RestApiId: !Ref Api
+        ApiProxyEvent:
           Type: Api
           Properties:
             Path: /{proxy+}
